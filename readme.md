@@ -9,5 +9,5 @@ It use hsohliyt105's [py-fumen](https://github.com/hsohliyt105/py-fumen) to conv
 
 ### Usage
 ```shell
-python main.py <TTR/TTRM file> <output folder>
+python main.py --help
 ```

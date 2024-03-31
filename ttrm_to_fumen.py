@@ -33,7 +33,7 @@ def rot_convert(op: Operation) -> Operation:
 
 
 
-def json_to_fumen(json_path, output_path):
+def json_to_fumen(json_path, output_path, additional_comment=False):
     if output_path[-1] not in ['/', '\\']:
         output_path += '/'
     with open(json_path, 'r') as f:
@@ -49,11 +49,32 @@ def json_to_fumen(json_path, output_path):
                     board_str = ''.join([''.join([str(x) for x in row]) for row in f]).replace(' ', '_').replace('G', 'X')
                 else:
                     board_str = '__________' * 20
+
+                comment = ''
+                if additional_comment:
+                    if d[a]['data']['beforeMino']['lines'] != 0:
+                        if d[a]['data']['backToBack'] > 1:
+                            comment += f'{d[a]["data"]["backToBack"]-1}x B2B '
+                        if d[a]['data']['combo'] > 1:
+                            comment = f'{d[a]["data"]["combo"]-1} combo '
+                        if d[a]['data']['beforeMino']['spin'] == 'Normal':
+                            comment += 'T-Spin '
+                        elif d[a]['data']['beforeMino']['spin'] == 'Mini':
+                            comment += 'T-Spin Mini '
+                        if d[a]['data']['beforeMino']['lines'] == 1:
+                            comment += 'Single'
+                        elif d[a]['data']['beforeMino']['lines'] == 2:
+                            comment += 'Double'
+                        elif d[a]['data']['beforeMino']['lines'] == 3:
+                            comment += 'Triple'
+                        elif d[a]['data']['beforeMino']['lines'] == 4:
+                            comment += 'Quad'
+
                 op = Operation(d[a]['data']['beforeMino']['minoType'], rot_to_text(d[a]['data']['beforeMino']['rotation']),
                                d[a]['data']['beforeMino']['x'], 37 - d[a]['data']['beforeMino']['y'])
                 op = rot_convert(op)
                 field = Field.create(board_str, '__________')
-                pages.append(Page(field=create_inner_field(field), operation=op))
+                pages.append(Page(field=create_inner_field(field), operation=op, comment=comment))
 
             os.makedirs(output_path + 'game' + str(game), exist_ok=True)
             # print(game, player, len(pages))
